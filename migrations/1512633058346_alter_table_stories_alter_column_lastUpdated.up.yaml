@@ -1,0 +1,9 @@
+- args:
+    sql: ALTER TABLE "stories" ALTER COLUMN "lastUpdated" TYPE text;
+  type: run_sql
+- args:
+    sql: ALTER TABLE "stories" ALTER COLUMN "lastUpdated" DROP DEFAULT;
+  type: run_sql
+- args:
+    sql: ALTER TABLE "stories" ALTER COLUMN "lastUpdated" SET NOT NULL;
+  type: run_sql

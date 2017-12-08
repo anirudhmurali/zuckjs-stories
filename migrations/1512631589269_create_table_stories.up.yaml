@@ -1,0 +1,8 @@
+- args:
+    sql: CREATE TABLE "stories"("id" text NOT NULL, "photo" text NOT NULL, "name"
+      text NOT NULL, "link" text NOT NULL, "lastUpdated" timestamptz NOT NULL, "items"
+      json NOT NULL, PRIMARY KEY ("id") )
+  type: run_sql
+- args:
+    name: stories
+  type: add_existing_table_or_view

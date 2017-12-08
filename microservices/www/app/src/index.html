@@ -1,0 +1,182 @@
+<html>
+    <head>
+
+        <title>Zuck.js</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0"/>
+
+        <!-- styles just for demo -->
+		<link rel="icon" href="ICON.png">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+        <style>
+            body {font-family:'Roboto', sans-serif;font-size:14px;padding:0;margin:0;color:#333}
+            #stories {padding: 12px;}
+			
+            h1 {text-align: center;font-family: monospace;padding:0 12px;border-bottom:1px solid #ddd;font-size:24px;height:56px;line-height:56px;margin-bottom: 0;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;}
+			h1.Snapgram {background: #fff;color:#333;}
+			h1.FaceSnap {background: #3B5998;color: #fff;}
+			h1.VemDeZAP {background: #085E53;color: #fff;}
+			h1.Snapssenger {background: #0084FF;color:#fff;}
+			
+			.disclaimer {display:block;text-decoration: none !important;color:#333;line-height: 1.5em;background: #ffffd2;border-radius:3px;margin: 12px 12px 0;padding:12px 12px 12px 74px;font-size:13px;max-width: 500px;overflow: hidden;min-height: 50px;}
+			.disclaimer img {float:left;margin-right: 12px;width:50px;position: absolute;margin-left:-62px;}
+			.disclaimer a {color: inherit !important;border:0;}
+			.disclaimer p {margin: 0;}
+			.disclaimer p + p {margin-top: 1.25em}
+			
+            .skin {text-transform: uppercase;white-space: nowrap;overflow: hidden;font-weight: bold;position: absolute;z-index: 10;left:0;right:0;bottom: 0;background: #fff;font-size:16px;padding:12px;color:#fff;background:#333;}
+			.skin select {background: #fff; font-size:inherit;text-transform: none; max-width: 30%;}
+			
+			#stories {max-width: 500px;margin:0 auto;}
+		
+			@media (min-width: 524px){
+				.disclaimer {margin: 12px auto;}
+			}
+		</style>
+        
+        <!-- script styles -->
+        <link rel="stylesheet" href="zuck.css">
+        <link rel="stylesheet" href="skins/snapgram.css">
+        <link rel="stylesheet" href="skins/vemdezap.css">
+        <link rel="stylesheet" href="skins/facesnap.css">
+        <link rel="stylesheet" href="skins/snapssenger.css">
+    </head>
+    <body style="display:none">
+        <h1 id="header">&nbsp;</h1>
+				
+		<a href="https://ramon.codes/projects/zuck.js" target="_blank" class="disclaimer">
+			<img src="ICON.png">
+			
+			<p>This a demonstration of <strong>zuck.js</strong> javascript library.</p>
+			<p>Not associated with Facebook, Instagram, WhatsApp or Snapchat.</p>
+		</a>
+		
+		<div id="stories"></div>
+
+        <div class="skin">
+            Choose your theme: 
+            
+            <select id="skin" onchange="location.href=location.href.split('#')[0].split('?')[0]+'?skin='+this.options[this.selectedIndex].value;">
+                <option value="Snapgram">Snapgram (without fullscreen)</option>
+                <option value="FaceSnap">FaceSnap (with fullscreen)</option>
+                <option value="VemDeZAP">VemDeZAP (timeline)</option>
+                <option value="Snapssenger">Snapssenger (with previews)</option>
+            </select>
+        </div>
+		
+        <script src="zuck.js"></script>
+        <script>
+            function buildItem(id, type, length, src, preview, link, linkText, seen, time){
+                return {
+                            "id": id,
+                            "type": type,
+                            "length": length,
+                            "src": src,
+                            "preview": preview,
+                            "link": link,
+                            "linkText": linkText,
+                            "seen": seen,
+							"time": time
+                        };
+            }
+            /* 
+
+            items:
+            [{"length":3,"seen":false,"time":"12-10-03","linkText":false,"link":"","src":"https://pbs.twimg.com/profile_images/794285789240623104/Cyio02cd_400x400.jpg","preview":"https://pbs.twimg.com/profile_images/794285789240623104/Cyio02cd_400x400.jpg","id":"qotsa-1","type":"photo"}]
+
+            */
+            $.ajax({
+            	url: "https://data.afoot43.hasura-app.io/v1/query",
+            	contentType: "application/json",
+            	data: JSON.stringify({
+            		"type": "select",
+            		"args": {
+            			"table": "stories",
+            			"columns": [
+            				"*"
+            			]
+            		}
+            	}),
+            	type: "POST",
+            	dataType: "json"
+            }).done(function(json) {
+            	jsonResult = json;
+				var header = document.getElementById("header");
+				var skin = location.href.split('skin=')[1];
+				
+				if(!skin) {
+					skin = 'Snapgram';
+				} 
+
+				if(skin.indexOf('#')!==-1){
+				   skin = skin.split('#')[0];
+				}
+
+				var skins = {
+					'Snapgram': {
+						'avatars': true,
+						'list': false,
+						'autoFullScreen': false,
+                        'cubeEffect': true
+					},
+
+					'VemDeZAP': {
+						'avatars': false,
+						'list': true,
+						'autoFullScreen': false,
+                        'cubeEffect': false
+					},
+
+					'FaceSnap': {
+						'avatars': true,
+						'list': false,
+						'autoFullScreen': true,
+                        'cubeEffect': false
+					},
+
+					'Snapssenger': {
+						'avatars': false,
+						'list': false,
+						'autoFullScreen': false,
+                        'cubeEffect': false
+					}
+				};
+				
+				var timeIndex = 0;
+				var shifts = [35, 60, 60*3, 60*60*2, 60*60*25, 60*60*24*4, 60*60*24*10];
+				var timestamp = function() {
+				    var now = new Date();
+				    var shift = shifts[timeIndex++] || 0;
+				    var date = new Date( now - shift*1000);
+
+				    return date.getTime() / 1000;
+				};
+
+				var storiesContent = [];
+				storiesContent.push({backNative:true,previousTap: true,localStorage:true,stories:jsonResult});
+				storiesContent = JSON.stringify(storiesContent);
+            	storiesContent = storiesContent.substring(1,storiesContent.length-1);
+            	storiesContent = JSON.parse(storiesContent);
+
+				var stories = new Zuck('stories', storiesContent);
+                
+                var el = document.querySelectorAll('#skin option');
+                var total = el.length;
+                for (var i = 0; i < total; i++) {
+					var what = (skin==el[i].value)?true:false;
+                    
+					if(what){
+						el[i].setAttribute('selected', what);
+
+						header.innerHTML = skin;
+						header.className = skin;
+					} else {
+						el[i].removeAttribute('selected');
+					}
+                }
+
+				document.body.style.display = 'block';
+			});
+        </script>
+    </body>
+</html>

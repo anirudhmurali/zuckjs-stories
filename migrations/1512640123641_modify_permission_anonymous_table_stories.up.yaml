@@ -1,0 +1,42 @@
+- args:
+    role: anonymous
+    table: stories
+  type: drop_select_permission
+- args:
+    permission:
+      check: {}
+    role: anonymous
+    table: stories
+  type: create_insert_permission
+- args:
+    permission:
+      columns:
+      - id
+      - photo
+      - name
+      - link
+      - lastUpdated
+      - items
+      filter: {}
+    role: anonymous
+    table: stories
+  type: create_select_permission
+- args:
+    permission:
+      columns:
+      - id
+      - photo
+      - name
+      - link
+      - lastUpdated
+      - items
+      filter: {}
+    role: anonymous
+    table: stories
+  type: create_update_permission
+- args:
+    permission:
+      filter: {}
+    role: anonymous
+    table: stories
+  type: create_delete_permission
