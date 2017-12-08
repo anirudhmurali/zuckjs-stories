@@ -6,7 +6,6 @@ This quickstart repo comes with three things:
 * A sample "stories" database consisting of sample details needed for the story
 * A static webpage making use of Hasura Data API (jQuery) to fetch details from the stories table.
 
-![Preview:]
-(https://github.com/anirudhmurali/zuckjs-stories/blob/master/stories.png)
+![Preview](https://github.com/anirudhmurali/zuckjs-stories/blob/master/stories.png)
 
 Your app will be running at https://www.cluster-name.hasura-app.io
